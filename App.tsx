@@ -2,8 +2,9 @@ import { View, StatusBar } from 'react-native';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed';
 import { config } from './config/gluestack-ui.config';
+
 import { Loading } from '@components/Loading';
-import { SignIn } from './src/screens/SignIn';
+import { SignUp } from './src/screens/SignUp';
 
 export default function App() {
 
@@ -13,7 +14,7 @@ export default function App() {
     <GluestackUIProvider config={config}>
       <StatusBar barStyle={'light-content'} backgroundColor={'transparent'} translucent />
       {fontsLoaded ?
-        <SignIn /> :
+        <SignUp /> :
         <Loading />
       }
     </GluestackUIProvider>
