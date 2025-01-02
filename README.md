@@ -1,1 +1,1 @@
-# Projeto de um aplicativo para academia
+# Projeto Aplicativo para academia
