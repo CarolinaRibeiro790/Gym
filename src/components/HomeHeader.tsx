@@ -1,7 +1,6 @@
 import { Heading, HStack, VStack, Text, Icon } from "@gluestack-ui/themed";
 import {LogOut} from "lucide-react-native";
 
-
 import { UserPhoto } from "./UserPhoto";
 
 export function HomeHeader() {
