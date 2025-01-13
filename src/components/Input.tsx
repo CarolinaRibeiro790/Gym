@@ -14,12 +14,17 @@ export function Input({ isReadOnly = false, errorMessage = null, isInvalid = fal
     return (
         <FormControl isInvalid={invalid} mb={"$4"} w={"$full"}>
             <GluestackInput
+                isInvalid={isInvalid}
                 h={"$14"}
                 borderWidth={"$0"}
                 borderRadius={"$md"}
+                $invalid={{
+                    borderWidth: 1,
+                    borderColor: "$red500"
+                }}
                 $focus={{
                     borderWidth: 1,
-                    borderColor: "$green500"
+                    borderColor: invalid ? "$red500" : "$green500"
                 }}
                 isReadOnly={isReadOnly} //desabilitar o input
                 opacity={isReadOnly ? 0.5 : 1}
