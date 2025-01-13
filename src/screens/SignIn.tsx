@@ -22,7 +22,7 @@ export function SignIn() {
             showsHorizontalScrollIndicator={false}
         >
             <VStack flex={1}>
-                <Image w={"$full"} h={624}
+                <Image w={"$full"} h={624} opacity={0.5}
                     source={BackgroundImg}
                     defaultSource={BackgroundImg}
                     alt="Pessoas treinando"
@@ -36,7 +36,7 @@ export function SignIn() {
                         </Text>
                     </Center>
 
-                    <Center gap={"$2"}>
+                    <Center gap={"$5"} mt={"$10"} pt={"$6"}>
                         <Heading color="$gray100">Acesse a conta</Heading>
                         <Input placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" />
                         <Input placeholder="Senha" secureTextEntry />

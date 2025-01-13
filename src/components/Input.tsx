@@ -21,6 +21,8 @@ export function Input({ isReadOnly = false, ...rest }: Props) {
 
             <InputField
                 bg="$gray700"
+                borderColor="$gray600"
+                borderWidth={1}
                 color="$white"
                 fontFamily="$body"
                 px={"$4"}
