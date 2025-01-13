@@ -9,8 +9,9 @@ export function ExerciseCard({...rest}: Props){
     return(
         <TouchableOpacity {...rest}>
             <HStack bg="$gray500" alignItems="center" p={"$2"} pr={"$4"} rounded={"$md"} mb={"$3"}>
-                <Image source={{
-                    uri: "https://i.pinimg.com/236x/26/a4/31/26a4312ea5c9d9ca5415cef6670f88f0.jpg"
+                <Image 
+                source={{
+                    uri: "https://static.strengthlevel.com/images/exercises/close-grip-lat-pulldown/close-grip-lat-pulldown-800.jpg"
                 }} 
                 alt="Imagem do exercício"
                 w={"$16"}
