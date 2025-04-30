@@ -1,19 +1,24 @@
-import { VStack, Image, Center, Text, Heading, ScrollView } from "@gluestack-ui/themed";
+import { useState } from "react";
+import { VStack, Image, Center, Text, Heading, ScrollView, useToast } from "@gluestack-ui/themed";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup';
 
+import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { useAuth } from "@hooks/useAuth";
 
 import BackgroundImg from "@assets/background.png";
 import Logo from "../assets/logo.svg"
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
+import { isLoading } from "expo-font";
 
-type FormDataProps = {
+type FormData = {
     email: string;
     password: string;
 }
@@ -26,18 +31,33 @@ const signUpSchema = yup.object({
 })
 
 export function SignIn() {
-    const navigation = useNavigation<AuthNavigatorRoutesProps>();
+    const [isLoading, setIsLoading] = useState(false);
+    const { signIn } = useAuth();
 
-    const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
-        resolver: yupResolver(signUpSchema)
-    });
+    const navigation = useNavigation<AuthNavigatorRoutesProps>();
+    const toast= useToast();
+
+    const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
 
     function handleNewAccount() {
         navigation.navigate("signUp")
     }
 
-    function handleSignIn({ email, password }: FormDataProps) {
-        console.log(email, password);
+    async function handleSignIn({ email, password }: FormData) {
+        try {
+            setIsLoading(true);
+            await signIn(email, password);
+            console.log(email, password)
+
+        } catch (error) {
+            const isAppError = error instanceof AppError;
+            const title = isAppError ? error.message : 'Não foi possível entrar. Tente novamente mais tarde.';
+
+            setIsLoading(false);
+
+            Alert.alert(title);
+           
+        }
     }
 
 
@@ -90,9 +110,10 @@ export function SignIn() {
                             )}
                         />
 
-                        <Button 
-                            title="Acessar" 
+                        <Button
+                            title="Acessar"
                             onPress={handleSubmit(handleSignIn)}
+                            isLoading = {isLoading}
                         />
 
                     </Center>
