@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-
+import { storageAuthTokenSave, storageAuthTokenGet,storageAuthTokenRemove} from '@storage/storageAuthToken';
 import { storageUserSave, storageUserGet, storageUserRemove } from '@storage/storageUser';
 import { UserDTO } from '@dtos/UserDTO';
 import { api } from '@services/api';
@@ -11,18 +11,36 @@ export type AuthContextDataProps = {
     isLoadingUserStorageData: boolean
 }
 
-//Meu contexto recebe o tipo, a tipagem entre <> e as para tipar nosso valor incial.
-//Meu contexto vai compartilhar dados que estão definidos na tipagem e começa como objeto vazio {}
 export const AuthContext = createContext<AuthContextDataProps>({} as AuthContextDataProps);
 
 type AuthContextProviderProps = {
     children: ReactNode;
 }
 
-//Função para pegar o componente filho e passar para função provider/children será as rotas 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
     const [user, setUser] = useState<UserDTO>({} as UserDTO);
     const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true);
+
+    //atualizar o token e salvar dados 
+    async function userAndTokenUpdate(userData: UserDTO, token: string) {
+
+        //token anexado 
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setUser(userData);
+
+    }
+
+    async function storageUserAndTokenSave(userData: UserDTO, token: string) {
+        try {
+            setIsLoadingUserStorageData(true);
+            await storageUserSave(userData);
+            await storageAuthTokenSave(token);
+        } catch (error) {
+            throw error;
+        } finally {
+            setIsLoadingUserStorageData(false);
+        }
+    }
 
     //Tipagem Login
     async function signIn(email: string, password: string) {
@@ -31,13 +49,14 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
             const { data } = await api.post('/sessions', { email, password });
 
             //Verificar se o usuário existe
-            if (data.user) {
-                setUser(data.user);
-                //salvar os dados no dispositivo do usuário 
-                storageUserSave(data.user);
+            if (data.user && data.token) {
+                await storageUserAndTokenSave(data.user, data.token);
+                userAndTokenUpdate(data.user, data.token)
             }
         } catch (error) {
             throw error;
+        } finally {
+            setIsLoadingUserStorageData(false);
         }
     }
 
@@ -47,6 +66,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
             setIsLoadingUserStorageData(true);
             setUser({} as UserDTO);
             await storageUserRemove();
+            await storageAuthTokenRemove();
 
         } catch (error) {
             throw error;
@@ -57,13 +77,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
     async function loadUserData() {
         try {
-            //recuperar o usuário que esta logado
+            setIsLoadingUserStorageData(true);
+
+            //recuperar/busca as informações do usuário 
             const userLogged = await storageUserGet();
+            const token = await storageAuthTokenGet();
 
             // verificar se o usuário esta logado
-            if (userLogged) {
-                setUser(userLogged);
-
+            if (token && userLogged) {
+                userAndTokenUpdate(userLogged, token);
             }
         } catch (error) {
             throw error;

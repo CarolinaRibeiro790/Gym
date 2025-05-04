@@ -3,7 +3,7 @@ import axios from "axios";
 import { AppError } from "@utils/AppError";
 
 const api = axios.create({
-    baseURL: 'http://192.168.43.61:3333' //definir o endereço do servidor fixo
+    baseURL: 'http://192.168.3.9:3333' //definir o endereço do servidor fixo
 });
 
 
