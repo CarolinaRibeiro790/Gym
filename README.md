@@ -11,7 +11,7 @@ O projeto foi desenvolvido como parte do curso da **Rocketseat**, com foco em bo
 Este projeto foi desenvolvido com as seguintes tecnologias:
 - React Native: para o frontend
 - Context API: para gerenciamento de estado global
-- Node.js: no backend
+- Node.js: para o backend
 - JWT (JSON Web Token): para autenticação segura
 - Yup: para validação de formulários
 - Axios: para requisições HTTP
