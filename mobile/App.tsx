@@ -6,7 +6,7 @@ import { ToastProvider } from '@gluestack-ui/toast';
 import { THEME } from './src/theme';
 import { Routes } from '@routes/index';
 import { Loading } from '@components/Loading';
-
+import 'react-native-url-polyfill/auto';
 import { AuthContextProvider } from '@contexts/AuthContext';
 
 export default function App() {

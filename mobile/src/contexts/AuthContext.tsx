@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { storageAuthTokenSave, storageAuthTokenGet,storageAuthTokenRemove} from '@storage/storageAuthToken';
+import { storageAuthTokenSave, storageAuthTokenGet, storageAuthTokenRemove } from '@storage/storageAuthToken';
 import { storageUserSave, storageUserGet, storageUserRemove } from '@storage/storageUser';
 import { UserDTO } from '@dtos/UserDTO';
 import { api } from '@services/api';
@@ -8,7 +8,8 @@ export type AuthContextDataProps = {
     user: UserDTO
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
-    isLoadingUserStorageData: boolean
+    updateUserProfile: (userUpdated: UserDTO) => Promise<void>;
+    isLoadingUserStorageData: boolean;
 }
 
 export const AuthContext = createContext<AuthContextDataProps>({} as AuthContextDataProps);
@@ -75,6 +76,16 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         }
     }
 
+    //Atualizar os dados do usuario
+    async function updateUserProfile(userUpdated: UserDTO) {
+        try {
+            setUser(userUpdated);
+            await storageUserSave(userUpdated);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async function loadUserData() {
         try {
             setIsLoadingUserStorageData(true);
@@ -103,7 +114,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
             user,
             signIn,
             signOut,
-            isLoadingUserStorageData
+            isLoadingUserStorageData,
+            updateUserProfile
         }}>
             {children}
         </AuthContext.Provider>
