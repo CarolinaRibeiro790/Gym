@@ -9,7 +9,7 @@ O projeto foi desenvolvido como parte do curso da **Rocketseat**, com foco em bo
 ## 🚀 Tecnologias
 
 Este projeto foi desenvolvido com as seguintes tecnologias:
-- React Native: no frontend
+- React Native: para o frontend
 - Context API: para gerenciamento de estado global
 - Node.js: no backend
 - JWT (JSON Web Token): para autenticação segura
