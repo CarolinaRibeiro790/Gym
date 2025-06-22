@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, Alert } from "react-native";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { Center, VStack, Text, Heading, useToast } from "@gluestack-ui/themed";
@@ -14,7 +14,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
-import { AuthContext, AuthContextDataProps } from "@contexts/AuthContext";
+import defaultUserPhotoImg from '@assets/userPhotoDefault.png';
 
 const PHOTO_SIZE = 33;
 
@@ -36,11 +36,9 @@ const profileSchema = yup.object({
 })
 
 export function Profile() {
-    const [userPhoto, setUserPhoto] = useState("https://github.com/CarolinaRibeiro790.png");
-
     const [isUpdating, setUpdating] = useState(false);
     const toast = useToast();
-    const { user } = useAuth();
+    const { user, updatedUserProfile } = useAuth();
     const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
         defaultValues: {
             name: user.name,
@@ -48,6 +46,15 @@ export function Profile() {
         },
         resolver: yupResolver(profileSchema)
     });
+
+    useEffect(() => {
+        (async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permissão necessária', 'Precisamos de acesso à galeria!');
+            }
+        })();
+    }, []);
 
     async function handleUserPhotoSelect() {
         try {
@@ -78,8 +85,31 @@ export function Profile() {
                     })
                 }
 
-                setUserPhoto(photoURI);
+                //Extensão da imagem
+                const fileExtension = photoSelected.assets[0].uri.split('.').pop();
+
+                const photoFile = {
+                    name: `${user.name}.${fileExtension}`.toLowerCase(),
+                    uri: photoSelected.assets[0].uri,
+                    type: `${photoSelected.assets[0].type}/${fileExtension}`
+
+                } as any;
+
+                const userPhotoUploadForm = new FormData();
+                userPhotoUploadForm.append('avatar', photoFile);
+
+                const avatarUpdateResponse = await api.patch('/users/avatar', userPhotoUploadForm, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                const userUpdated = user;
+                userUpdated.avatar = avatarUpdateResponse.data.avatar;
+                updatedUserProfile(userUpdated);
+
             }
+
         } catch (error) {
             console.log(error);
         }
@@ -114,7 +144,8 @@ export function Profile() {
             <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
                 <Center mt={"$6"} px={"$10"}>
                     <UserPhoto
-                        source={{ uri: userPhoto }} alt="Foto do usuário"
+                        source={user.avatar ? { uri: `${api.defaults.baseURL}/avatar/{$user.avatar}` } : defaultUserPhotoImg}
+                        alt="Foto do usuário"
                         size="xl"
                     />
                     <TouchableOpacity onPress={handleUserPhotoSelect}>
