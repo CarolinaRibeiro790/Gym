@@ -17,7 +17,7 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
 - Axios: para requisições HTTP
 - React Navigation: para navegação entre telas
 
-  ## 🔐 Funcionalidades
+## 🔐 Funcionalidades
 
 - Login e cadastro com autenticação via **JWT**
 - Validação de senha com **Yup**
